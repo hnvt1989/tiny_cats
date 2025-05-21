@@ -147,6 +147,36 @@ async function speakText(text: string) {
   };
   window.speechSynthesis.speak(utterance);
 }
+
+function speakCurrentSlide() {
+  if (!isNarrationEnabled || !slideshow) return;
+  const slides = slideshow.querySelectorAll('.slide') as NodeListOf<HTMLDivElement>;
+  if (slides.length === 0) return;
+
+  const slideshowCenterX = slideshow.scrollLeft + slideshow.clientWidth / 2;
+  let currentSlide: HTMLDivElement | null = null;
+  let minDistance = Infinity;
+
+  slides.forEach(slide => {
+    if ((slide as HTMLElement).offsetParent === null) return;
+    const slideCenterX = slide.offsetLeft + slide.offsetWidth / 2;
+    const distance = Math.abs(slideshowCenterX - slideCenterX);
+    if (distance < minDistance) {
+      minDistance = distance;
+      currentSlide = slide;
+    }
+  });
+
+  if (currentSlide) {
+    const caption = currentSlide.querySelector('div[data-speech-text]') as HTMLDivElement;
+    if (caption) {
+      const textToSpeak = caption.getAttribute('data-speech-text');
+      if (textToSpeak) {
+        speakText(textToSpeak);
+      }
+    }
+  }
+}
 // --- End Speech Synthesis Setup ---
 
 
@@ -402,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isNarrationEnabled) {
         narrationToggleButton.textContent = 'Disable Narration';
         repeatButton.disabled = slideshow.querySelectorAll('.slide').length === 0;
+        speakCurrentSlide();
       } else {
         narrationToggleButton.textContent = 'Enable Narration';
         if (window.speechSynthesis) {
