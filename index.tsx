@@ -331,7 +331,7 @@ async function generate(message: string) {
     for (const sentenceText of sentences) {
       if (!sentenceText) continue;
       try {
-        const imagePrompt = `${sentenceText} - cute, minimal illustration, black ink on white background, simple line art drawing.`;
+        const imagePrompt = `${sentenceText} - cute, minimal illustration with bright colors, simple line art drawing.`;
         const imageResponse = await ai.models.generateImages({
           model: 'imagen-3.0-generate-002',
           prompt: imagePrompt,
