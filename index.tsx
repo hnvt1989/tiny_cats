@@ -94,6 +94,7 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 let selectedVoice: SpeechSynthesisVoice | null = null;
 let voices: SpeechSynthesisVoice[] = [];
 let isNarrationEnabled = false; // Narration is disabled by default
+let speakOnFirstSlide = false; // Used when narration enabled before slides exist
 
 function loadVoices() {
   if (!window.speechSynthesis) return;
@@ -206,8 +207,9 @@ async function addSlide(text: string, image: HTMLImageElement) {
 
 
   slide.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-  if (isNarrationEnabled) {
+  if (isNarrationEnabled || speakOnFirstSlide) {
     speakText(text);
+    speakOnFirstSlide = false;
   }
 }
 
@@ -431,14 +433,24 @@ document.addEventListener('DOMContentLoaded', () => {
       isNarrationEnabled = !isNarrationEnabled;
       if (isNarrationEnabled) {
         narrationToggleButton.textContent = 'Disable Narration';
-        repeatButton.disabled = slideshow.querySelectorAll('.slide').length === 0;
-        speakCurrentSlide();
+        const hasSlides = slideshow.querySelectorAll('.slide').length > 0;
+        repeatButton.disabled = !hasSlides;
+        if (hasSlides) {
+          speakCurrentSlide();
+        } else {
+          speakOnFirstSlide = true;
+          if (window.speechSynthesis) {
+            // Attempt to resume the synthesis engine so future speech isn't blocked
+            try { window.speechSynthesis.resume(); } catch {}
+          }
+        }
       } else {
         narrationToggleButton.textContent = 'Enable Narration';
         if (window.speechSynthesis) {
           window.speechSynthesis.cancel();
         }
         repeatButton.disabled = true;
+        speakOnFirstSlide = false;
       }
     });
   }
