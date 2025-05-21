@@ -6,6 +6,44 @@
 import {GoogleGenAI, GenerateContentResponse} from '@google/genai'; // Changed from @google/ai
 import {marked} from 'marked';
 
+// --- Fetch streaming compatibility polyfill ---
+function supportsRequestStreams(): boolean {
+  try {
+    // Attempt constructing a Request with a ReadableStream body.
+    // Browsers that do not support request streams will throw here.
+    new Request('', { method: 'POST', body: new ReadableStream(), duplex: 'half' as any });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+if (!supportsRequestStreams()) {
+  const originalFetch = window.fetch;
+  window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    if (init?.body instanceof ReadableStream) {
+      const reader = init.body.getReader();
+      const chunks: Uint8Array[] = [];
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        if (value) chunks.push(value);
+      }
+      const blob = new Blob(chunks);
+      const newInit: RequestInit = { ...init, body: blob };
+      delete (newInit as any).duplex;
+      return originalFetch(input, newInit);
+    }
+    if (init && 'duplex' in init) {
+      const newInit = { ...init };
+      delete (newInit as any).duplex;
+      return originalFetch(input, newInit);
+    }
+    return originalFetch(input, init);
+  };
+}
+// --- End Fetch streaming compatibility polyfill ---
+
 let ai: GoogleGenAI | null = null;
 const globalErrorDiv = document.querySelector('#error') as HTMLDivElement;
 const globalUserInput = document.querySelector('#input') as HTMLTextAreaElement;
