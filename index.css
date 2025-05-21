@@ -136,6 +136,35 @@ textarea#input {
   color: light-dark(#343a40, #f8f9fa);
 }
 
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#micButton {
+  font-size: 1.5rem;
+  padding: 8px 12px;
+  border: 1px solid light-dark(#ced4da, #495057);
+  border-radius: 6px;
+  background-color: light-dark(#e9ecef, #343a40);
+  color: light-dark(#343a40, #f8f9fa);
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+#micButton:hover:not(:disabled) {
+  background-color: light-dark(#dee2e6, #495057);
+  border-color: light-dark(#adb5bd, #6c757d);
+}
+
+#micButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  background-color: light-dark(#e9ecef, #2c3034);
+  border-color: light-dark(#dee2e6, #454a4f);
+}
+
 textarea#input:focus {
   outline: none;
   border-color: light-dark(#1c7ed6, #66b2ff);
