@@ -86,6 +86,7 @@ const repeatButton = document.querySelector('#repeatButton') as HTMLButtonElemen
 const narrationToggleButton = document.querySelector('#narrationToggleButton') as HTMLButtonElement;
 const lightbox = document.querySelector('#lightbox') as HTMLDivElement;
 const lightboxImage = document.querySelector('#lightboxImage') as HTMLImageElement;
+const lightboxCaption = document.querySelector('#lightboxCaption') as HTMLDivElement;
 const lightboxPrev = document.querySelector('#lightboxPrev') as HTMLButtonElement;
 const lightboxNext = document.querySelector('#lightboxNext') as HTMLButtonElement;
 const lightboxClose = document.querySelector('#lightboxClose') as HTMLButtonElement;
@@ -201,12 +202,19 @@ function speakCurrentSlide() {
 let lightboxIndex = 0;
 
 function showLightboxImage(index: number) {
-  const images = Array.from(slideshow.querySelectorAll<HTMLImageElement>('.slide img'));
+  const slides = Array.from(slideshow.querySelectorAll<HTMLDivElement>('.slide'));
+  const images = slides.map(slide => slide.querySelector('img') as HTMLImageElement);
   if (images.length === 0) return;
   if (index < 0) index = images.length - 1;
   if (index >= images.length) index = 0;
   lightboxIndex = index;
   lightboxImage.src = images[index].src;
+  const captionEl = slides[index].querySelector('div[data-speech-text]') as HTMLDivElement | null;
+  if (captionEl && lightboxCaption) {
+    lightboxCaption.innerHTML = captionEl.innerHTML;
+  } else if (lightboxCaption) {
+    lightboxCaption.innerHTML = '';
+  }
 }
 
 function openLightbox(index: number) {
