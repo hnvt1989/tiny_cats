@@ -100,7 +100,7 @@ h1 {
 }
 
 .slide div { /* Targeting the caption div inside .slide */
-  font-size: 24px;
+  font-size: 48px; /* doubled for clearer captions */
   text-align: center;
   text-wrap: balance;
   margin-top: 20px;
@@ -238,28 +238,28 @@ textarea#input:focus {
   max-width: 90%;
   color: white;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 3rem; /* make caption text twice as large */
 }
 
 .lightbox-nav {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 20px; /* move controls to the top */
+  transform: none;
   background: none;
   border: none;
   color: white;
-  font-size: 2.5rem;
+  font-size: 5rem; /* twice as big for easier clicking */
   cursor: pointer;
-  padding: 0 10px;
+  padding: 0 20px;
   user-select: none;
 }
 
 .lightbox-nav.prev {
-  left: 10px;
+  left: 20px; /* more spacing from the edge */
 }
 
 .lightbox-nav.next {
-  right: 10px;
+  right: 20px; /* more spacing from the edge */
 }
 
 .lightbox-close {

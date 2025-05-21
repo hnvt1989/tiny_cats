@@ -267,6 +267,44 @@ lightbox.addEventListener('pointerup', e => {
   }
   pointerStartX = null;
 });
+
+// Swipe support for the main slideshow
+function navigateSlideshow(delta: number) {
+  const slides = Array.from(slideshow.querySelectorAll<HTMLDivElement>('.slide'));
+  if (slides.length === 0) return;
+
+  const slideshowCenterX = slideshow.scrollLeft + slideshow.clientWidth / 2;
+  let currentIndex = 0;
+  let minDistance = Infinity;
+
+  slides.forEach((slide, i) => {
+    const slideCenterX = slide.offsetLeft + slide.offsetWidth / 2;
+    const distance = Math.abs(slideshowCenterX - slideCenterX);
+    if (distance < minDistance) {
+      minDistance = distance;
+      currentIndex = i;
+    }
+  });
+
+  let targetIndex = currentIndex + delta;
+  targetIndex = Math.max(0, Math.min(targetIndex, slides.length - 1));
+  slides[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+let slideshowPointerStartX: number | null = null;
+slideshow.addEventListener('pointerdown', e => { slideshowPointerStartX = e.clientX; });
+slideshow.addEventListener('pointerup', e => {
+  if (slideshowPointerStartX === null) return;
+  const diff = e.clientX - slideshowPointerStartX;
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) {
+      navigateSlideshow(-1);
+    } else {
+      navigateSlideshow(1);
+    }
+  }
+  slideshowPointerStartX = null;
+});
 // --- End Lightbox Setup ---
 
 
