@@ -7,10 +7,10 @@
 }
 
 body {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Comic Sans MS', 'Indie Flower', cursive;
   padding: 20px;
-  background-color: light-dark(#f8f9fa, #212529);
-  color: light-dark(#343a40, #f8f9fa);
+  background: linear-gradient(135deg, #ffebf8 0%, #e0f7ff 100%);
+  color: #333;
   line-height: 1.6;
   max-width: 1200px;
   margin: 20px auto;
@@ -20,11 +20,15 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  border: 4px dashed #ffb6c1;
+  border-radius: 12px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.8);
 }
 
 h1 {
   margin-bottom: 40px;
-  color: light-dark(#212529, #ffffff);
+  color: #ff6f61;
   text-align: center;
 }
 
@@ -36,18 +40,26 @@ h1 {
 
 #examples li {
   margin-bottom: 10px;
-  padding: 15px 20px;
-  border: 1px solid light-dark(#dee2e6, #495057);
-  border-radius: 6px;
-  background-color: light-dark(#ffffff, #343a40);
+  padding: 15px 20px 15px 40px;
+  border: 2px solid #ffb6c1;
+  border-radius: 12px;
+  background-color: #fffbe6;
+  position: relative;
   transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-#examples li:hover {
-  background-color: light-dark(#e9ecef, #495057);
-  border-color: light-dark(#adb5bd, #adb5bd);
-  box-shadow: 0 2px 4px light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
+#examples li::before {
+  content: "🌼";
+  position: absolute;
+  left: 15px;
 }
+
+#examples li:hover {
+  background-color: #fff1cc;
+  border-color: #ff94c2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 
 #slideshow {
   display: flex;
@@ -69,17 +81,17 @@ h1 {
 }
 
 .slide {
-  border: 1px solid light-dark(#ced4da, #495057);
+  border: 2px solid #ffb6c1;
   padding: 25px;
   font-family: "Indie Flower", cursive;
   scroll-snap-align: center;
   background-color: #ffffff;
-  border-radius: 8px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   min-width: 380px;
-  box-shadow: 0 4px 12px light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease-in-out;
 }
 
@@ -115,7 +127,7 @@ textarea#input {
   padding: 15px 20px;
   border: 1px solid light-dark(#ced4da, #495057);
   border-radius: 6px;
-  font-family: 'Space Mono', monospace;
+  font-family: 'Comic Sans MS', 'Space Mono', monospace;
   margin-top: 8px;
   min-height: 90px;
   resize: vertical;
