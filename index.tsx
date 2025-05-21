@@ -79,6 +79,7 @@ try {
 
 
 const userInput = document.querySelector('#input') as HTMLTextAreaElement;
+const micButton = document.querySelector('#micButton') as HTMLButtonElement | null;
 const modelOutput = document.querySelector('#output') as HTMLDivElement;
 const slideshow = document.querySelector('#slideshow') as HTMLDivElement;
 const error = document.querySelector('#error') as HTMLDivElement; // This is the same as globalErrorDiv
@@ -107,6 +108,48 @@ slideDelayInputs.forEach(input => {
 const IMAGE_GENERATION_DELAY_MS = 1500;
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+function createSpeechRecognition(): SpeechRecognition | null {
+  const Ctor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  return Ctor ? new Ctor() : null;
+}
+
+function startVoiceInput() {
+  if (!micButton) return;
+  const recognition = createSpeechRecognition();
+  if (!recognition) {
+    error.innerHTML = 'Speech recognition not supported in this browser.';
+    error.removeAttribute('hidden');
+    return;
+  }
+  micButton.disabled = true;
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.onresult = (ev: SpeechRecognitionEvent) => {
+    const transcript = Array.from(ev.results)
+      .map(r => r[0].transcript)
+      .join('');
+    userInput.value = transcript.trim();
+    userInput.focus();
+  };
+  recognition.onerror = (ev: any) => {
+    error.innerHTML = `Speech recognition error: ${ev.error}`;
+    error.removeAttribute('hidden');
+  };
+  recognition.onend = () => {
+    micButton.disabled = false;
+  };
+  try {
+    recognition.start();
+  } catch (err) {
+    micButton.disabled = false;
+    console.error('Speech recognition start failed', err);
+  }
+}
+
+if (micButton) {
+  micButton.addEventListener('click', startVoiceInput);
+}
 
 // --- Speech Synthesis Setup ---
 let selectedVoice: SpeechSynthesisVoice | null = null;

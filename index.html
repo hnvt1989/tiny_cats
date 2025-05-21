@@ -22,7 +22,10 @@
     <label><input type="radio" name="slideDelay" value="60">60</label>
     <label><input type="radio" name="slideDelay" value="120">120</label>
   </div>
-  <textarea id="input" placeholder="Enter some prompt and press Enter."></textarea>
+  <div class="input-row">
+    <textarea id="input" placeholder="Enter some prompt and press Enter."></textarea>
+    <button id="micButton" aria-label="Speak prompt">🎤</button>
+  </div>
   <div id="output"></div>
   <div id="slideshow" hidden></div>
   <div class="controls-container">
