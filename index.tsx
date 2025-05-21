@@ -84,6 +84,11 @@ const slideshow = document.querySelector('#slideshow') as HTMLDivElement;
 const error = document.querySelector('#error') as HTMLDivElement; // This is the same as globalErrorDiv
 const repeatButton = document.querySelector('#repeatButton') as HTMLButtonElement;
 const narrationToggleButton = document.querySelector('#narrationToggleButton') as HTMLButtonElement;
+const lightbox = document.querySelector('#lightbox') as HTMLDivElement;
+const lightboxImage = document.querySelector('#lightboxImage') as HTMLImageElement;
+const lightboxPrev = document.querySelector('#lightboxPrev') as HTMLButtonElement;
+const lightboxNext = document.querySelector('#lightboxNext') as HTMLButtonElement;
+const lightboxClose = document.querySelector('#lightboxClose') as HTMLButtonElement;
 const slideDelayInputs = document.querySelectorAll('input[name="slideDelay"]') as NodeListOf<HTMLInputElement>;
 let slideDelaySeconds = 5;
 slideDelayInputs.forEach(input => {
@@ -192,6 +197,70 @@ function speakCurrentSlide() {
 }
 // --- End Speech Synthesis Setup ---
 
+// --- Lightbox Setup ---
+let lightboxIndex = 0;
+
+function showLightboxImage(index: number) {
+  const images = Array.from(slideshow.querySelectorAll<HTMLImageElement>('.slide img'));
+  if (images.length === 0) return;
+  if (index < 0) index = images.length - 1;
+  if (index >= images.length) index = 0;
+  lightboxIndex = index;
+  lightboxImage.src = images[index].src;
+}
+
+function openLightbox(index: number) {
+  showLightboxImage(index);
+  lightbox.classList.remove('hidden');
+}
+
+function closeLightbox() {
+  lightbox.classList.add('hidden');
+}
+
+lightboxPrev.addEventListener('click', () => {
+  showLightboxImage(lightboxIndex - 1);
+});
+
+lightboxNext.addEventListener('click', () => {
+  showLightboxImage(lightboxIndex + 1);
+});
+
+lightboxClose.addEventListener('click', () => {
+  closeLightbox();
+});
+
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+document.addEventListener('keydown', e => {
+  if (lightbox.classList.contains('hidden')) return;
+  if (e.key === 'ArrowLeft') {
+    showLightboxImage(lightboxIndex - 1);
+  } else if (e.key === 'ArrowRight') {
+    showLightboxImage(lightboxIndex + 1);
+  } else if (e.key === 'Escape') {
+    closeLightbox();
+  }
+});
+
+let pointerStartX: number | null = null;
+lightbox.addEventListener('pointerdown', e => { pointerStartX = e.clientX; });
+lightbox.addEventListener('pointerup', e => {
+  if (pointerStartX === null) return;
+  const diff = e.clientX - pointerStartX;
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) {
+      showLightboxImage(lightboxIndex - 1);
+    } else {
+      showLightboxImage(lightboxIndex + 1);
+    }
+  }
+  pointerStartX = null;
+});
+// --- End Lightbox Setup ---
+
 
 const textModelInstructions = `
 Use a fun story about lots of tiny cats as a metaphor.
@@ -210,6 +279,9 @@ async function addSlide(text: string, image: HTMLImageElement) {
   slide.append(caption);
   slideshow.append(slide);
   slideshow.removeAttribute('hidden');
+
+  const index = slideshow.querySelectorAll('.slide').length - 1;
+  image.addEventListener('click', () => openLightbox(index));
 
   if (repeatButton.hidden) {
     repeatButton.hidden = false;
